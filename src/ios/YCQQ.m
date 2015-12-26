@@ -173,16 +173,49 @@ NSString *QQ_LOGIN_NETWORK_ERROR = @"QQ login network error";
 #pragma mark - TencentSessionDelegate
 - (void)tencentDidLogin {
     if (self.tencentOAuth.accessToken && 0 != [self.tencentOAuth.accessToken length]) {
-        NSMutableDictionary *Dic = [NSMutableDictionary dictionaryWithCapacity:2];
-        [Dic setObject:self.tencentOAuth.openId forKey:@"userid"];
-        [Dic setObject:self.tencentOAuth.accessToken forKey:@"access_token"];
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:Dic];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callback];
+        //登录成功
+        [self.tencentOAuth getUserInfo];
+
+        //NSMutableDictionary *Dic = [NSMutableDictionary dictionaryWithCapacity:2];
+        //[Dic setObject:self.tencentOAuth.openId forKey:@"openid"];
+        //[Dic setObject:self.tencentOAuth.accessToken forKey:@"access_token"];
+        //CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:Dic];
+        //[self.commandDelegate sendPluginResult:pluginResult callbackId:self.callback];
     }
     else {
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:QQ_LOGIN_ERROR];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callback];
     }
+}
+
+-(void)getUserInfoResponse:(APIResponse *)response {
+    //登录成功需要在这里获取用户信息
+    NSLog(@"respons:%@",response.jsonResponse);
+    NSLog(@"nickName:%@",response.jsonResponse[@"nickname"]);
+
+    NSMutableDictionary *Dic = [NSMutableDictionary dictionaryWithCapacity:2];
+
+    [Dic setObject:response.jsonResponse[@"ret"] forKey:@"ret"];
+    [Dic setObject:response.jsonResponse[@"msg"] forKey:@"msg"];
+    [Dic setObject:response.jsonResponse[@"is_lost"] forKey:@"is_lost"];
+    [Dic setObject:response.jsonResponse[@"nickname"] forKey:@"nickname"];
+    [Dic setObject:response.jsonResponse[@"gender"] forKey:@"gender"];
+    [Dic setObject:response.jsonResponse[@"province"] forKey:@"province"];
+    [Dic setObject:response.jsonResponse[@"city"] forKey:@"city"];
+    [Dic setObject:response.jsonResponse[@"figureurl"] forKey:@"figureurl"];
+    [Dic setObject:response.jsonResponse[@"figureurl_1"] forKey:@"figureurl_1"];
+    [Dic setObject:response.jsonResponse[@"figureurl_2"] forKey:@"figureurl_2"];
+    [Dic setObject:response.jsonResponse[@"figureurl_qq_1"] forKey:@"figureurl_qq_1"];
+    [Dic setObject:response.jsonResponse[@"figureurl_qq_2"] forKey:@"figureurl_qq_2"];
+    [Dic setObject:response.jsonResponse[@"is_yellow_vip"] forKey:@"is_yellow_vip"];
+    [Dic setObject:response.jsonResponse[@"vip"] forKey:@"vip"];
+    [Dic setObject:response.jsonResponse[@"yellow_vip_level"] forKey:@"yellow_vip_level"];
+    [Dic setObject:response.jsonResponse[@"level"] forKey:@"level"];
+    [Dic setObject:response.jsonResponse[@"is_yellow_year_vip"] forKey:@"is_yellow_year_vip"];
+    [Dic setObject:self.tencentOAuth.openId forKey:@"openid"];
+    [Dic setObject:self.tencentOAuth.accessToken forKey:@"access_token"];
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:Dic];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callback];
 }
 
 - (void)tencentDidLogout {
@@ -271,16 +304,16 @@ NSString *QQ_LOGIN_NETWORK_ERROR = @"QQ login network error";
             kOPEN_PERMISSION_MATCH_NICK_TIPS_WEIBO,
                     nil];
     self.callback = command.callbackId;
-    if (self.tencentOAuth.isSessionValid) {
-        NSMutableDictionary *Dic = [NSMutableDictionary dictionaryWithCapacity:2];
-        [Dic setObject:self.tencentOAuth.openId forKey:@"userid"];
-        [Dic setObject:self.tencentOAuth.accessToken forKey:@"access_token"];
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:Dic];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callback];
-    }
-    else {
+    //if (self.tencentOAuth.isSessionValid) {
+    //    NSMutableDictionary *Dic = [NSMutableDictionary dictionaryWithCapacity:2];
+    //    [Dic setObject:self.tencentOAuth.openId forKey:@"openid"];
+    //    [Dic setObject:self.tencentOAuth.accessToken forKey:@"access_token"];
+    //    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:Dic];
+    //    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callback];
+    //}
+    //else {
         [self.tencentOAuth authorize:self.permissions inSafari:NO];
-    }
+    //}
 }
 
 @end
